@@ -1,59 +1,23 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
+import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
-# Słownik z modelami (dla demonstracji - funkcje zwracające przykładowe wyniki)
-def model_jablko():
-    return "Wynik analizy: Liść jabłoni jest zdrowy."
-
-def model_papryka():
-    return "Wynik analizy: Liść papryki ma oznaki choroby."
-
-def model_jagoda():
-    return "Wynik analizy: Liść jagody jest zdrowy."
-
-def model_wisnia():
-    return "Wynik analizy: Liść wiśni ma infekcję grzybiczą."
-
-def model_kukurydza():
-    return "Wynik analizy: Liść kukurydzy jest zdrowy."
-
-def model_winogron():
-    return "Wynik analizy: Liść winorośli ma plamistość liści."
-
-def model_brzoskwinia():
-    return "Wynik analizy: Liść brzoskwini jest zdrowy."
-
-def model_ziemniak():
-    return "Wynik analizy: Liść ziemniaka ma zarazę ziemniaczaną."
-
-def model_malina():
-    return "Wynik analizy: Liść maliny jest zdrowy."
-
-def model_soyabean():
-    return "Wynik analizy: Liść soi ma rdze liści."
-
-def model_truskawka():
-    return "Wynik analizy: Liść truskawki ma objawy mączniaka."
-
-def model_pomidor():
-    return "Wynik analizy: Liść pomidora ma mozaikę wirusową."
-
-# Przypisanie modeli do odpowiednich rodzajów liści
-modele = {
-    "Jabłko": model_jablko,
-    "Papryka": model_papryka,
-    "Jagoda": model_jagoda,
-    "Wiśnia": model_wisnia,
-    "Kukurydza": model_kukurydza,
-    "Winogron": model_winogron,
-    "Brzoskwinia": model_brzoskwinia,
-    "Ziemniak": model_ziemniak,
-    "Malina": model_malina,
-    "Soyabean": model_soyabean,
-    "Truskawka": model_truskawka,
-    "Pomidor": model_pomidor,
+# Ścieżki do modeli dla różnych rodzajów liści
+MODELS = {
+    "Jabłko": r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\MODELS\Apple\best_apple.keras'
 }
+
+# Kategorie klas dla modelu Apple (dostosuj do swoich klas)
+APPLE_CLASSES = ["Zdrowy", "Apple Rust", "Apple Scab"]
+
+# Załaduj model dla jabłka
+try:
+    apple_model = load_model(MODELS["Jabłko"])
+except Exception as e:
+    messagebox.showerror("Błąd ładowania modelu", f"Nie można załadować modelu: {e}")
 
 # Funkcja do wyboru pliku i wyświetlenia obrazu
 def wybierz_plik():
@@ -67,6 +31,7 @@ def wybierz_plik():
     )
     if sciezka_pliku:
         wyswietl_obraz(sciezka_pliku)
+        analizuj_obraz(sciezka_pliku)
     else:
         messagebox.showinfo("Brak pliku", "Nie wybrano żadnego pliku.")
 
@@ -74,7 +39,7 @@ def wybierz_plik():
 def wyswietl_obraz(sciezka):
     try:
         obraz = Image.open(sciezka)
-        obraz = obraz.resize((400, 400))  # Zmiana rozmiaru dla lepszego dopasowania do okna
+        obraz = obraz.resize((500, 500))  # Zmiana rozmiaru dla lepszego dopasowania do okna
         obraz_tk = ImageTk.PhotoImage(obraz)
         panel_obraz.config(image=obraz_tk)
         panel_obraz.image = obraz_tk
@@ -82,14 +47,28 @@ def wyswietl_obraz(sciezka):
         messagebox.showerror("Błąd", f"Nie można otworzyć pliku: {e}")
 
 # Funkcja do analizy obrazu za pomocą odpowiedniego modelu
-def analizuj_obraz():
+def analizuj_obraz(sciezka):
     rodzaj = rodzaj_lisci.get()
-    if not rodzaj:
-        messagebox.showwarning("Brak wyboru", "Najpierw wybierz rodzaj liści z listy.")
-        return
+    if rodzaj == "Jabłko":
+        try:
+            # Załaduj obraz i przetwórz go
+            obraz = Image.open(sciezka).resize((224, 224))
+            obraz = np.array(obraz)
+            obraz = preprocess_input(obraz)  # Normalizacja dla MobileNetV2
+            obraz = np.expand_dims(obraz, axis=0)
 
-    wynik = modele[rodzaj]()
-    messagebox.showinfo("Wynik Analizy", wynik)
+            # Predykcja za pomocą modelu
+            predictions = apple_model.predict(obraz)[0]
+
+            # Wyniki w procentach
+            wyniki = {APPLE_CLASSES[i]: f"{predictions[i] * 100:.2f}%" for i in range(len(APPLE_CLASSES))}
+            wynik_tekst = "\n".join([f"{klasa}: {procent}" for klasa, procent in wyniki.items()])
+
+            messagebox.showinfo("Wynik Analizy", wynik_tekst)
+        except Exception as e:
+            messagebox.showerror("Błąd analizy", f"Wystąpił problem podczas analizy: {e}")
+    else:
+        messagebox.showinfo("Brak modelu", "Model dla tego rodzaju liści nie jest jeszcze zaimplementowany.")
 
 # Tworzenie głównego okna aplikacji
 root = tk.Tk()
@@ -121,10 +100,6 @@ btn_wybierz.pack(pady=20)
 # Panel do wyświetlania obrazu
 panel_obraz = tk.Label(root, text="Tutaj pojawi się wybrany obraz", bg="white", width=50, height=20)
 panel_obraz.pack(pady=20)
-
-# Przycisk do analizy obrazu
-btn_analizuj = tk.Button(root, text="Analizuj obraz", command=analizuj_obraz)
-btn_analizuj.pack(pady=20)
 
 # Uruchomienie aplikacji
 root.mainloop()
