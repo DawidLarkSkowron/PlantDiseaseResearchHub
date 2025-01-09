@@ -19,8 +19,8 @@ FINE_TUNE_LEARNING_RATE = 0.00001
 PATIENCE = 10
 
 # Ścieżki do katalogów z danymi (zmień na swoje)
-TRAIN_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\Corn_Train'
-VAL_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\Corn_Val'
+TRAIN_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\Potato_Train'
+VAL_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\Potato_Val'
 
 # Sprawdzenie, czy katalogi istnieją
 if not os.path.exists(TRAIN_DIR) or not os.path.exists(VAL_DIR):
@@ -79,7 +79,7 @@ model.compile(optimizer=Adam(learning_rate=INITIAL_LEARNING_RATE),
 
 # Callbacki: EarlyStopping i ModelCheckpoint
 early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
-checkpoint = ModelCheckpoint('best_corn.keras', save_best_only=True, monitor='val_loss')
+checkpoint = ModelCheckpoint('best_potato.keras', save_best_only=True, monitor='val_loss')
 
 # Trenowanie modelu
 history = model.fit(
@@ -107,7 +107,7 @@ history_fine = model.fit(
 )
 
 # Zapisywanie finalnego modelu
-model.save('corn.keras')
+model.save('potato.keras')
 
 # Funkcja do wizualizacji wyników treningu
 def plot_training(history, history_fine):
