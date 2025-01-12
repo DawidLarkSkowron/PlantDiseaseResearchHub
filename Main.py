@@ -9,10 +9,10 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 # Paths to models for different plant diseases
 MODELS = {
-    "Jabłko": r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\MODELS\Apple\best_apple.keras',
-    #"Pomidor": r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\MODELS\Tomato\best_tomato.keras',
-    "Kukurydza": r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\MODELS\Corn\best_corn.keras',
-    "Ziemniak": r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\MODELS\Potato\best_potato.keras',
+    "Jabłko": r'MODELS\Apple\best_apple.keras',
+    "Pomidor": r'MODELS\Tomato\best_tomato.keras',
+    "Kukurydza": r'MODELS\Corn\best_corn.keras',
+    "Ziemniak": r'MODELS\Potato\best_potato.keras',
 }
 
 # Class categories for each model
@@ -33,12 +33,16 @@ for plant, model_path in MODELS.items():
     try:
         loaded_models[plant] = load_model(model_path)
     except Exception as e:
-        messagebox.showerror("Błąd ładowania modelu", f"Nie można załadować modelu dla {plant}: {e}")
+        messagebox.showerror("Błąd ładowania modelu",
+                             f"Nie można załadować modelu dla {plant}: {e}")
 
 # Function to choose and display file
+
+
 def wybierz_plik():
     if not rodzaj_lisci.get():
-        messagebox.showwarning("Brak wyboru", "Najpierw wybierz rodzaj liści z listy.")
+        messagebox.showwarning(
+            "Brak wyboru", "Najpierw wybierz rodzaj liści z listy.")
         return
 
     sciezka_pliku = filedialog.askopenfilename(
@@ -52,17 +56,22 @@ def wybierz_plik():
         messagebox.showinfo("Brak pliku", "Nie wybrano żadnego pliku.")
 
 # Function to display the selected image
+
+
 def wyswietl_obraz(sciezka):
     try:
         obraz = Image.open(sciezka)
-        obraz = obraz.resize((500, 500))  # Resize for better window fit
+        obraz.thumbnail((panel_obraz.winfo_width(),
+                        panel_obraz.winfo_height()), Image.LANCZOS)
         obraz_tk = ImageTk.PhotoImage(obraz)
-        panel_obraz.config(image=obraz_tk)
+        panel_obraz.config(image=obraz_tk, text="")
         panel_obraz.image = obraz_tk
     except Exception as e:
         messagebox.showerror("Błąd", f"Nie można otworzyć pliku: {e}")
 
 # Function to analyze the image with the selected model
+
+
 def analizuj_obraz(sciezka):
     rodzaj = rodzaj_lisci.get()
     if rodzaj in loaded_models:
@@ -78,19 +87,24 @@ def analizuj_obraz(sciezka):
 
             # Results in percentages
             categories = CLASS_CATEGORIES[rodzaj]
-            wyniki = {categories[i]: f"{predictions[i] * 100:.2f}%" for i in range(len(categories))}
-            wynik_tekst = "\n".join([f"{klasa}: {procent}" for klasa, procent in wyniki.items()])
+            wyniki = {
+                categories[i]: f"{predictions[i] * 100:.2f}%" for i in range(len(categories))}
+            wynik_tekst = "\n".join(
+                [f"{klasa}: {procent}" for klasa, procent in wyniki.items()])
 
-            messagebox.showinfo("Wynik Analizy", wynik_tekst)
+            # Update the result label
+            label_wynik.config(text=wynik_tekst)
         except Exception as e:
-            messagebox.showerror("Błąd analizy", f"Wystąpił problem podczas analizy: {e}")
+            label_wynik.config(text=f"Wystąpił problem podczas analizy: {e}")
     else:
-        messagebox.showinfo("Brak modelu", f"Model dla {rodzaj} nie jest zaimplementowany.")
+        label_wynik.config(
+            text=f"Model dla {rodzaj} nie jest zaimplementowany.")
+
 
 # Create the main application window
 root = tk.Tk()
 root.title("Analiza Zdrowia Liści")
-root.geometry("500x700")
+root.geometry("600x800")
 root.resizable(False, False)
 
 # Title label
@@ -110,12 +124,18 @@ rodzaj_lisci.pack(pady=5)
 rodzaj_lisci.set("")  # Set default empty value
 
 # Button to select the file
-btn_wybierz = tk.Button(root, text="Wybierz obraz liścia", command=wybierz_plik)
+btn_wybierz = tk.Button(
+    root, text="Wybierz obraz liścia", command=wybierz_plik)
 btn_wybierz.pack(pady=20)
 
 # Panel to display the image
-panel_obraz = tk.Label(root, text="Tutaj pojawi się wybrany obraz", bg="white", width=50, height=20)
-panel_obraz.pack(pady=20)
+panel_obraz = tk.Label(
+    root, text="Tutaj pojawi się wybrany obraz", bg="white", width=50, height=20)
+panel_obraz.pack(pady=20, fill=tk.BOTH, expand=True)
+
+# Label to display the analysis results
+label_wynik = tk.Label(root, text="", font=("Arial", 12), bg="white")
+label_wynik.pack(pady=20, fill=tk.BOTH, expand=True)
 
 # Run the application
 root.mainloop()
