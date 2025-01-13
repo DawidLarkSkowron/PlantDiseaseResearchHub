@@ -1,5 +1,3 @@
-# Updated script to include additional fruits and diseases based on user input
-
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
@@ -13,6 +11,8 @@ MODELS = {
     "Pomidor": r'MODELS\Tomato\best_tomato.keras',
     "Kukurydza": r'MODELS\Corn\best_corn.keras',
     "Ziemniak": r'MODELS\Potato\best_potato.keras',
+    "Winogrono": r'MODELS\Grape\best_grape.keras',
+    "Papryka": r'MODELS\Pepper\best_pepper.keras',
 }
 
 # Class categories for each model
@@ -25,6 +25,8 @@ CLASS_CATEGORIES = {
     ],
     "Kukurydza": ["Gray Leaf Spot", "Corn Rust", "Corn Leaf Blight"],
     "Ziemniak": ["Potato Early Blight", "Potato Late Blight", "Healthy"],
+    "Winogrono": ["Healthy", "Grape Black Rot", "Grape Leaf Blight"],
+    "Papryka": ["Healthy", "Pepper Bell Bacterial Spot", "Pepper Bell Healthy"]
 }
 
 # Preload models
@@ -33,12 +35,10 @@ for plant, model_path in MODELS.items():
     try:
         loaded_models[plant] = load_model(model_path)
     except Exception as e:
-        messagebox.showerror("Błąd ładowania modelu",
-                             f"Nie można załadować modelu dla {plant}: {e}")
+        print(f"Nie udało się załadować modelu dla {plant}: {e}")
+        loaded_models[plant] = None
 
 # Function to choose and display file
-
-
 def wybierz_plik():
     if not rodzaj_lisci.get():
         messagebox.showwarning(
@@ -56,8 +56,6 @@ def wybierz_plik():
         messagebox.showinfo("Brak pliku", "Nie wybrano żadnego pliku.")
 
 # Function to display the selected image
-
-
 def wyswietl_obraz(sciezka):
     try:
         obraz = Image.open(sciezka)
@@ -70,11 +68,9 @@ def wyswietl_obraz(sciezka):
         messagebox.showerror("Błąd", f"Nie można otworzyć pliku: {e}")
 
 # Function to analyze the image with the selected model
-
-
 def analizuj_obraz(sciezka):
     rodzaj = rodzaj_lisci.get()
-    if rodzaj in loaded_models:
+    if rodzaj in loaded_models and loaded_models[rodzaj] is not None:
         try:
             # Load and preprocess the image
             obraz = Image.open(sciezka).resize((224, 224))
@@ -98,8 +94,7 @@ def analizuj_obraz(sciezka):
             label_wynik.config(text=f"Wystąpił problem podczas analizy: {e}")
     else:
         label_wynik.config(
-            text=f"Model dla {rodzaj} nie jest zaimplementowany.")
-
+            text=f"Model dla {rodzaj} nie jest dostępny.")
 
 # Create the main application window
 root = tk.Tk()
@@ -113,7 +108,7 @@ label_title.pack(pady=10)
 
 # Dropdown for selecting the plant type
 rodzaje_lisci = [
-    "Jabłko", "Pomidor", "Kukurydza", "Ziemniak"
+    "Jabłko", "Pomidor", "Kukurydza", "Ziemniak", "Winogrono", "Papryka"
 ]
 
 label_lista = tk.Label(root, text="Wybierz rodzaj liści:", font=("Arial", 12))
