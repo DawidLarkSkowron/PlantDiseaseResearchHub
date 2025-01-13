@@ -1,3 +1,5 @@
+# Updated script to include additional fruits and diseases based on user input
+
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
@@ -35,10 +37,12 @@ for plant, model_path in MODELS.items():
     try:
         loaded_models[plant] = load_model(model_path)
     except Exception as e:
-        print(f"Nie udało się załadować modelu dla {plant}: {e}")
-        loaded_models[plant] = None
+        messagebox.showerror("Błąd ładowania modelu",
+                             f"Nie można załadować modelu dla {plant}: {e}")
 
 # Function to choose and display file
+
+
 def wybierz_plik():
     if not rodzaj_lisci.get():
         messagebox.showwarning(
@@ -56,6 +60,8 @@ def wybierz_plik():
         messagebox.showinfo("Brak pliku", "Nie wybrano żadnego pliku.")
 
 # Function to display the selected image
+
+
 def wyswietl_obraz(sciezka):
     try:
         obraz = Image.open(sciezka)
@@ -68,9 +74,11 @@ def wyswietl_obraz(sciezka):
         messagebox.showerror("Błąd", f"Nie można otworzyć pliku: {e}")
 
 # Function to analyze the image with the selected model
+
+
 def analizuj_obraz(sciezka):
     rodzaj = rodzaj_lisci.get()
-    if rodzaj in loaded_models and loaded_models[rodzaj] is not None:
+    if rodzaj in loaded_models:
         try:
             # Load and preprocess the image
             obraz = Image.open(sciezka).resize((224, 224))
@@ -94,7 +102,8 @@ def analizuj_obraz(sciezka):
             label_wynik.config(text=f"Wystąpił problem podczas analizy: {e}")
     else:
         label_wynik.config(
-            text=f"Model dla {rodzaj} nie jest dostępny.")
+            text=f"Model dla {rodzaj} nie jest zaimplementowany.")
+
 
 # Create the main application window
 root = tk.Tk()
