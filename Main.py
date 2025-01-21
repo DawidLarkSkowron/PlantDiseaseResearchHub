@@ -10,9 +10,8 @@ from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 # Paths to models for different plant diseases
 MODELS = {
     "Jabłko": r'MODELS\Apple\best_apple.keras',
-    "Pomidor": r'MODELS\Tomato\best_tomato.keras',
     "Kukurydza": r'MODELS\Corn\best_corn.keras',
-    "Ziemniak": r'MODELS\Potato\best_potato.keras',
+    "Ziemniak": r'best_potato.keras',
     "Winogrono": r'MODELS\Grape\best_grape.keras',
     "Papryka": r'MODELS\Pepper\best_pepper.keras',
 }
@@ -74,8 +73,6 @@ def wyswietl_obraz(sciezka):
         messagebox.showerror("Błąd", f"Nie można otworzyć pliku: {e}")
 
 # Function to analyze the image with the selected model
-
-
 def analizuj_obraz(sciezka):
     rodzaj = rodzaj_lisci.get()
     if rodzaj in loaded_models:
