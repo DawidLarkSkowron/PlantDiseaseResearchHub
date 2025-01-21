@@ -19,11 +19,6 @@ MODELS = {
 # Class categories for each model
 CLASS_CATEGORIES = {
     "Jabłko": ["Zdrowy", "Apple Rust", "Apple Scab"],
-    "Pomidor": [
-        "Tomato Early Blight", "Tomato Late Blight", "Tomato Mosaic Virus",
-        "Tomato Yellow Virus", "Tomato Bacterial Spot", "Tomato Septoria Spot",
-        "Tomato Mold Leaf"
-    ],
     "Kukurydza": ["Gray Leaf Spot", "Corn Rust", "Corn Leaf Blight"],
     "Ziemniak": ["Potato Early Blight", "Potato Late Blight", "Healthy"],
     "Winogrono": ["Healthy", "Grape Black Rot", "Grape Leaf Blight"],
@@ -114,7 +109,7 @@ label_title.pack(pady=10)
 
 # Dropdown for selecting the plant type
 rodzaje_lisci = [
-    "Jabłko", "Pomidor", "Kukurydza", "Ziemniak", "Winogrono", "Papryka"
+    "Jabłko", "Kukurydza", "Ziemniak", "Winogrono", "Papryka"
 ]
 
 label_lista = tk.Label(root, text="Wybierz rodzaj liści:", font=("Arial", 12))
