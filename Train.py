@@ -19,8 +19,8 @@ FINE_TUNE_LEARNING_RATE = 0.0001
 PATIENCE = 30
 
 # Ścieżki do katalogów z danymi (zmień na swoje)
-TRAIN_DIR = r'Potato_Train1'
-VAL_DIR = r'Potato_Val1'
+TRAIN_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\PLD_3_Classes_256\Training'
+VAL_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\PLD_3_Classes_256\Validation'
 
 # Sprawdzenie, czy katalogi istnieją
 if not os.path.exists(TRAIN_DIR) or not os.path.exists(VAL_DIR):
@@ -84,7 +84,7 @@ model.compile(optimizer=Adam(learning_rate=INITIAL_LEARNING_RATE),
 early_stopping = EarlyStopping(
     monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
 checkpoint = ModelCheckpoint(
-    'best_potato.keras', save_best_only=True, monitor='val_loss')
+    'best_potatoXD.keras', save_best_only=True, monitor='val_loss')
 reduce_lr = ReduceLROnPlateau(
     monitor='val_loss', factor=0.2, patience=5, min_lr=0.00001)
 
@@ -114,7 +114,7 @@ history_fine = model.fit(
 )
 
 # Zapisywanie finalnego modelu
-model.save('potato1.keras')
+model.save('potatoXD.keras')
 
 # Funkcja do wizualizacji wyników treningu
 
