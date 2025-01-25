@@ -12,15 +12,15 @@ import os
 # Parametry treningu
 BATCH_SIZE = 32
 IMG_SIZE = (224, 224)
-INITIAL_EPOCHS = 500
-FINE_TUNE_EPOCHS = 200
+INITIAL_EPOCHS = 100
+FINE_TUNE_EPOCHS = 50
 INITIAL_LEARNING_RATE = 0.001
 FINE_TUNE_LEARNING_RATE = 0.0001
 PATIENCE = 30
 
 # Ścieżki do katalogów z danymi (zmień na swoje)
-TRAIN_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\PLD_3_Classes_256\Training'
-VAL_DIR = r'C:\RozpoznawanieWzorców\PlantDiseaseResearchHub\PLD_3_Classes_256\Validation'
+TRAIN_DIR = r'Corn_Train'
+VAL_DIR = r'Corn_Val'
 
 # Sprawdzenie, czy katalogi istnieją
 if not os.path.exists(TRAIN_DIR) or not os.path.exists(VAL_DIR):
@@ -84,7 +84,7 @@ model.compile(optimizer=Adam(learning_rate=INITIAL_LEARNING_RATE),
 early_stopping = EarlyStopping(
     monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
 checkpoint = ModelCheckpoint(
-    'best_potatoXD.keras', save_best_only=True, monitor='val_loss')
+    'best_corn.keras', save_best_only=True, monitor='val_loss')
 reduce_lr = ReduceLROnPlateau(
     monitor='val_loss', factor=0.2, patience=5, min_lr=0.00001)
 
@@ -114,7 +114,7 @@ history_fine = model.fit(
 )
 
 # Zapisywanie finalnego modelu
-model.save('potatoXD.keras')
+model.save('corn.keras')
 
 # Funkcja do wizualizacji wyników treningu
 
